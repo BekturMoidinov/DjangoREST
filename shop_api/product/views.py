@@ -38,8 +38,10 @@ def category_detail_api_view(request,id):
 @api_view(['GET'])
 def review_list_api_view(request):
     reviews = Review.objects.all()
+
     data = ReviewSerializer(reviews,many=True).data
     return Response(data=data)
+
 
 @api_view(['GET'])
 def review_detail_api_view(request,id):
