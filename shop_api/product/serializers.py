@@ -28,7 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
         if reviewss:
             sum_reviews = sum(i.star for i in reviewss)
             average = sum_reviews / len(reviewss)
-            return average
+            return round(average,1)
         return None
 
 
