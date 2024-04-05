@@ -33,6 +33,7 @@ class ProductSerializer(serializers.ModelSerializer):
             return round(average,1)
         return None
 
+
 class ProductValidationSerializer(serializers.Serializer):
     title=serializers.CharField()
     price = serializers.IntegerField(min_value=1)
