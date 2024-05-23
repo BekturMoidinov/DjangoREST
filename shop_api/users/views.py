@@ -103,7 +103,7 @@ class CodeView(CreateAPIView):
 #         token,created=Token.objects.get_or_create(user=user)
 #         return Response(data={'key':token.key})
 #     return Response(data={'error':'user does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
-
+#
 # @api_view(['POST'])
 # def confirm_api_view(request):
 #     serializer = CodeValidationSerializer(data=request.data)
