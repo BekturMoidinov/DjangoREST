@@ -9,15 +9,15 @@ from .models import Code
 from django.utils import timezone
 from random import randint
 from django.core.mail import send_mail
-from shop_api.settings import EMAIL_HOST_USER
 from .serializers import UserRegistrationValidationSerializer,UserAuthenticationValidationSerializer,CodeValidationSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 # Create your views here.
 
 class RegisterView(CreateAPIView):
+    serializer_class = UserRegistrationValidationSerializer
     def post(self, request, *args, **kwargs):
-        serializer = UserRegistrationValidationSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
@@ -31,16 +31,13 @@ class RegisterView(CreateAPIView):
         code = int(('').join([str(randint(0, 9)) for i in range(6)]))
         deadline = timezone.now() + timezone.timedelta(minutes=4)
         Code.objects.create(user=user, code=code, deadline=deadline)
-        send_mail('Hi',
-                  f'your code: {code}\ncode expires in 4 min',
-                  EMAIL_HOST_USER,
-                  recipient_list=[user.email])
-        return Response(data={'user_id': user.id}, status=status.HTTP_201_CREATED)
+        return Response(data={'code': code}, status=status.HTTP_201_CREATED)
 
 
 class LoginView(CreateAPIView):
+    serializer_class = UserAuthenticationValidationSerializer
     def post(self, request, *args, **kwargs):
-        serializer = UserAuthenticationValidationSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user = authenticate(**serializer.validated_data)
@@ -50,8 +47,9 @@ class LoginView(CreateAPIView):
         return Response(data={'error': 'user does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class CodeView(CreateAPIView):
+    serializer_class = CodeValidationSerializer
     def post(self, request, *args, **kwargs):
-        serializer = CodeValidationSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         code = serializer.validated_data['code']
@@ -65,11 +63,7 @@ class CodeView(CreateAPIView):
             code = int(('').join([str(randint(0, 9)) for i in range(6)]))
             deadline = timezone.now() + timezone.timedelta(minutes=4)
             Code.objects.create(user=user_code.user, code=code, deadline=deadline)
-            send_mail('Expired',
-                      f'your new code: {code}\ncode expires in 4 min',
-                      EMAIL_HOST_USER,
-                      recipient_list=[user_code.user.email])
-            return Response(data={'error': 'code expired'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(data={'error': code}, status=status.HTTP_404_NOT_FOUND)
 
         user_code.user.is_active = True
         user_code.user.save()
