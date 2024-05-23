@@ -108,7 +108,7 @@ class CodeView(CreateAPIView):
 # def confirm_api_view(request):
 #     serializer = CodeValidationSerializer(data=request.data)
 #     serializer.is_valid(raise_exception=True)
-#
+
 #     code=serializer.validated_data['code']
 #     try:
 #         user_code=Code.objects.get(code=code)
