@@ -125,7 +125,6 @@ class CodeView(CreateAPIView):
 #                   EMAIL_HOST_USER,
 #                   recipient_list=[user_code.user.email])
 #         return Response(data={'error':'code expired'}, status=status.HTTP_404_NOT_FOUND)
-#
 #     user_code.user.is_active = True
 #     user_code.user.save()
 #     user_code.delete()
